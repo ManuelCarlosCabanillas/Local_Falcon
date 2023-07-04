@@ -5,6 +5,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.vectorstores import Chroma
 from langchain.llms import GPT4All, LlamaCpp
+from langchain import HuggingFacePipeline
 import os
 import argparse
 import time
@@ -36,6 +37,9 @@ def main():
             llm = LlamaCpp(model_path=model_path, n_ctx=model_n_ctx, n_batch=model_n_batch, callbacks=callbacks, verbose=False)
         case "GPT4All":
             llm = GPT4All(model=model_path, n_ctx=model_n_ctx, backend='gptj', n_batch=model_n_batch, callbacks=callbacks, verbose=False)
+        case "falcon":
+            llm = HuggingFacePipeline.from_model_id(model_id="tiiuae/falcon-7b-instruct",  task="text-generation", model_kwargs={"temperature":0, "max_length":1000,"trust_remote_code": True})
+
         case _default:
             # raise exception if model_type is not supported
             raise Exception(f"Model type {model_type} is not supported. Please choose one of the following: LlamaCpp, GPT4All")
